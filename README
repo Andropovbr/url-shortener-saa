@@ -93,6 +93,16 @@ docs/          # Architectural decisions and notes
 
 ---
 
+## Infrastructure Separation Strategy
+
+- bootstrap: Contains only Terraform backend infrastructure (S3 state bucket and DynamoDB lock table). Deployed once and rarely changed.
+
+- core: Contains foundational infrastructure that persists across lab sessions (VPC, subnets, route tables, base security groups).
+
+- runtime: Contains application-layer infrastructure (ALB, ECS, DynamoDB, cache, etc.). This layer is destroyed after each study session to control AWS costs.
+
+---
+
 ## AWS Region
 
 All infrastructure is deployed in `us-east-1`.
