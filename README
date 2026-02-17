@@ -1,0 +1,104 @@
+# URL Shortener — AWS Architecture Study Project
+
+## Overview
+
+This project simulates a production-style URL shortener architecture built on AWS using Terraform.
+
+The primary goal is to practice AWS Solutions Architect Associate (SAA-C03) concepts through hands-on infrastructure design, focusing on:
+
+- High availability (Multi-AZ)
+- Scalability
+- Security best practices
+- Infrastructure as Code
+- Cost awareness
+
+---
+
+## Project Philosophy
+
+This project follows a strict implementation rule:
+
+> No AI-generated infrastructure code.
+
+All Terraform code is written manually to reinforce understanding of:
+
+- Resource dependencies
+- Networking architecture
+- IAM scoping
+- Service interactions
+- Architectural trade-offs
+
+AI may be used for architectural discussion and reasoning, but not for generating ready-to-use Terraform code.
+
+---
+
+## Architecture Goals
+
+The system is designed to include:
+
+- Multi-AZ VPC architecture
+- Application Load Balancer
+- ECS Fargate service
+- DynamoDB data layer
+- Observability and monitoring
+- Security hardening
+- Cost-conscious design
+
+Infrastructure is destroyed after each study session to avoid unnecessary AWS charges.
+
+---
+
+## Naming Convention
+
+Pattern:
+
+`<project>-<component>-<environment>`
+
+Project:
+- `url-shortener-saa`
+
+Environments:
+- `dev`
+- `prod`
+
+Example:
+- `url-shortener-saa-vpc-dev`
+
+---
+
+## Tagging Standard
+
+All AWS resources must include the following tags:
+
+| Key          | Example Value     |
+|--------------|-------------------|
+| Project      | url-shortener-saa |
+| Owner        | Andre Santos      |
+| Environment  | dev or prod       |
+| ManagedBy    | Terraform         |
+
+---
+
+## Repository Structure
+
+```text
+infra/
+  bootstrap/   # Terraform backend resources (S3 + DynamoDB)
+  core/        # Foundational infrastructure (VPC, subnets, base SGs)
+  runtime/     # Application infrastructure (ALB, ECS, DynamoDB, etc.)
+app/           # Application source code
+diagrams/      # Architecture diagrams
+docs/          # Architectural decisions and notes
+```
+
+---
+
+## AWS Region
+
+All infrastructure is deployed in `us-east-1`.
+
+---
+
+## Disclaimer
+
+This is a study and portfolio project, not intended for production use.
