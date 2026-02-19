@@ -12,8 +12,6 @@ The primary goal is to practice AWS Solutions Architect Associate (SAA-C03) conc
 - Infrastructure as Code
 - Cost awareness
 
----
-
 ## Project Philosophy
 
 This project follows a strict implementation rule:
@@ -30,8 +28,6 @@ All Terraform code is written manually to reinforce understanding of:
 
 AI may be used for architectural discussion and reasoning, but not for generating ready-to-use Terraform code.
 
----
-
 ## Architecture Goals
 
 The system is designed to include:
@@ -45,8 +41,6 @@ The system is designed to include:
 - Cost-conscious design
 
 Infrastructure is destroyed after each study session to avoid unnecessary AWS charges.
-
----
 
 ## Naming Convention
 
@@ -64,8 +58,6 @@ Environments:
 Example:
 - `url-shortener-saa-vpc-dev`
 
----
-
 ## Tagging Standard
 
 All AWS resources must include the following tags:
@@ -76,8 +68,6 @@ All AWS resources must include the following tags:
 | Owner        | Andre Santos      |
 | Environment  | dev or prod       |
 | ManagedBy    | Terraform         |
-
----
 
 ## Repository Structure
 
@@ -91,8 +81,6 @@ diagrams/      # Architecture diagrams
 docs/          # Architectural decisions and notes
 ```
 
----
-
 ## Infrastructure Separation Strategy
 
 - bootstrap: Contains only Terraform backend infrastructure (S3 state bucket and DynamoDB lock table). Deployed once and rarely changed.
@@ -101,13 +89,47 @@ docs/          # Architectural decisions and notes
 
 - runtime: Contains application-layer infrastructure (ALB, ECS, DynamoDB, cache, etc.). This layer is destroyed after each study session to control AWS costs.
 
----
+## Terraform Remote Backend
+
+This project uses a centralized remote backend for state management.
+
+### Backend Architecture
+
+- S3 bucket for Terraform state storage
+- DynamoDB table for state locking
+- One shared backend for both environments (dev and prod)
+- State keys are separated by environment and layer
+
+### State Key Structure
+
+- `dev/core/terraform.tfstate`
+- `dev/runtime/terraform.tfstate`
+- `prod/core/terraform.tfstate`
+- `prod/runtime/terraform.tfstate`
+
+### Initialization Order
+
+1. Deploy `infra/bootstrap` (creates S3 bucket and DynamoDB table)
+2. Initialize backend for `infra/core`:
+   - `terraform init -backend-config=backend-dev.hcl`
+   - `terraform init -backend-config=backend-prod.hcl`
+3. Initialize backend for `infra/runtime`:
+   - `terraform init -backend-config=backend-dev.hcl`
+   - `terraform init -backend-config=backend-prod.hcl`
+
+### State Locking
+
+State locking is enforced via DynamoDB to prevent concurrent modifications.
+
+Lock behavior can be verified by running concurrent `terraform apply` operations.
+
+### Notes
+
+The `bootstrap` layer intentionally uses local state because it provisions the remote backend itself.
 
 ## AWS Region
 
 All infrastructure is deployed in `us-east-1`.
-
----
 
 ## Disclaimer
 
