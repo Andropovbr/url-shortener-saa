@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.14.0"
+  required_version = "~> 1.14.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -13,7 +13,7 @@ provider "aws" {
   default_tags {
     tags = {
       Project     = "url-shortener-saa"
-      Owner       = "Andre Santos"
+      Owner       = "André Santos"
       Environment = "shared"
       ManagedBy   = "Terraform"
     }
