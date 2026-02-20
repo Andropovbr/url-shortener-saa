@@ -3,8 +3,6 @@
 **/terraform.tfstate
 **/terraform.tfstate.*
 crash.log
-*.tfvars
-*.tfvars.json
 
 # Terraform override files
 override.tf
