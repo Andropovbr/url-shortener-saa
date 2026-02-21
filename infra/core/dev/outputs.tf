@@ -20,3 +20,18 @@ output "subnet_ids_private_data" {
   description = "List of private data subnets ID => id (component = data)"
   value       = [for k, v in local.subnets : aws_subnet.this[k].id if v.component == "data"]
 }
+
+output "security_group_alb" {
+  description = "ALB SG ID"
+  value       = aws_security_group.alb_sg.id
+}
+
+output "security_group_app" {
+  description = "App SG ID"
+  value       = aws_security_group.app_sg.id
+}
+
+output "security_group_data" {
+  description = "Data SG ID"
+  value       = aws_security_group.data_sg.id
+}
