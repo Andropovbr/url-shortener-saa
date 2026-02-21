@@ -7,42 +7,42 @@ locals {
 
   subnets = {
     public-a = {
-      cidr_block              = "10.0.0.0/24"
+      cidr_block              = "10.1.0.0/24"
       az_index                = 0
       tier                    = "public"
       component               = "edge"
       map_public_ip_on_launch = true
     }
     public-b = {
-      cidr_block              = "10.0.1.0/24"
+      cidr_block              = "10.1.1.0/24"
       az_index                = 1
       tier                    = "public"
       component               = "edge"
       map_public_ip_on_launch = true
     }
     private-app-a = {
-      cidr_block              = "10.0.10.0/24"
+      cidr_block              = "10.1.10.0/24"
       az_index                = 0
       tier                    = "private"
       component               = "app"
       map_public_ip_on_launch = false
     }
     private-app-b = {
-      cidr_block              = "10.0.11.0/24"
+      cidr_block              = "10.1.11.0/24"
       az_index                = 1
       tier                    = "private"
       component               = "app"
       map_public_ip_on_launch = false
     }
     private-data-a = {
-      cidr_block              = "10.0.20.0/24"
+      cidr_block              = "10.1.20.0/24"
       az_index                = 0
       tier                    = "private"
       component               = "data"
       map_public_ip_on_launch = false
     }
     private-data-b = {
-      cidr_block              = "10.0.21.0/24"
+      cidr_block              = "10.1.21.0/24"
       az_index                = 1
       tier                    = "private"
       component               = "data"
