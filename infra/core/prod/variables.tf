@@ -23,3 +23,13 @@ variable "cidr_block" {
   description = "CIDR Block"
   type        = string
 }
+
+variable "app_port" {
+  description = "Port used by the workload in ECS"
+  type        = number
+}
+
+variable "db_port" {
+  description = "Port used by the database"
+  type        = number
+}
