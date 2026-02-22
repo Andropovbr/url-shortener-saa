@@ -35,3 +35,13 @@ output "security_group_data" {
   description = "Data SG ID"
   value       = aws_security_group.data_sg.id
 }
+
+output "security_group_vpce" {
+  description = "VPC Endpoints SG ID"
+  value       = aws_security_group.vpce_sg.id
+}
+
+output "route_table_private" {
+  description = "Private Route Table ID"
+  value       = aws_route_table.private_rt.id
+}
