@@ -23,3 +23,8 @@ variable "health_check_path" {
   description = "Health check path"
   type        = string
 }
+
+variable "repository" {
+  description = "ECR repository URL"
+  type        = string
+}
