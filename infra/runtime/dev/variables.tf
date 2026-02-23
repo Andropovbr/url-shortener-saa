@@ -28,3 +28,13 @@ variable "repository" {
   description = "ECR repository URL"
   type        = string
 }
+
+variable "image_tag" {
+  description = "ECR image tag"
+  type        = string
+}
+
+variable "desired_count" {
+  type        = number
+  description = "Number of tasks to run."
+}
