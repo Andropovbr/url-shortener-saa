@@ -1,0 +1,1 @@
+data "aws_prefix_list" "s3" { name = "com.amazonaws.us-east-1.s3" }
