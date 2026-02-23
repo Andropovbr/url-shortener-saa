@@ -37,7 +37,7 @@ resource "aws_ecs_service" "this" {
   name            = "${var.project_name}-service-${var.env}"
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.this.arn
-  desired_count   = 1
+  desired_count   = 2
   launch_type     = "FARGATE"
 
   deployment_minimum_healthy_percent = 100

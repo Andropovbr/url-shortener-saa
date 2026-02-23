@@ -47,16 +47,6 @@ resource "aws_security_group_rule" "alb_to_app" {
   source_security_group_id = aws_security_group.alb_sg.id
 }
 
-//The rule below allows the app to access S3 via the VPC endpoint, which is necessary for ECS task execution role to pull images and send logs to CloudWatch
-resource "aws_security_group_rule" "app_to_s3_egress" {
-  type                     = "egress"
-  from_port                = 443
-  to_port                  = 443
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.app_sg.id
-  prefix_list_ids = [data.aws_prefix_list.s3.id]
-}
-
 resource "aws_security_group_rule" "alb_to_app_egress" {
   type                     = "egress"
   from_port                = var.app_port
@@ -84,6 +74,25 @@ resource "aws_security_group_rule" "app_to_data_egress" {
   source_security_group_id = aws_security_group.data_sg.id
 }
 
+resource "aws_security_group_rule" "app_to_vpce_egress" {
+  type                     = "egress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.app_sg.id
+  source_security_group_id = aws_security_group.vpce_sg.id
+}
+
+//The rule below allows the app to access S3 via the VPC endpoint, which is necessary for ECS task execution role to pull images and send logs to CloudWatch
+resource "aws_security_group_rule" "app_to_s3_egress" {
+  type                     = "egress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.app_sg.id
+  prefix_list_ids = [data.aws_prefix_list.s3.id]
+}
+
 resource "aws_security_group_rule" "internet_to_alb_http" {
   type              = "ingress"
   from_port         = 80
@@ -109,5 +118,4 @@ resource "aws_security_group_rule" "app_to_vpce" {
   protocol                 = "tcp"
   security_group_id        = aws_security_group.vpce_sg.id
   source_security_group_id = aws_security_group.app_sg.id
-
 }
