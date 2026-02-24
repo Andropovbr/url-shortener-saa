@@ -64,3 +64,14 @@ resource "aws_vpc_endpoint" "s3_gateway" {
     Name = "${var.project_name}-vpce-s3-gateway-${var.env}"
   }
 }
+
+resource "aws_vpc_endpoint" "dynamodb_gateway" {
+  vpc_id            = data.terraform_remote_state.core.outputs.vpc_id
+  service_name      = "com.amazonaws.${var.aws_region}.dynamodb"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = [data.terraform_remote_state.core.outputs.route_table_private]
+
+  tags = {
+    Name = "${var.project_name}-vpce-dynamodb-gateway-${var.env}"
+  }
+}
