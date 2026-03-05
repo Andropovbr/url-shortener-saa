@@ -46,11 +46,12 @@ resource "aws_ecs_task_definition" "this" {
 }
 
 resource "aws_ecs_service" "this" {
-  name            = "${var.project_name}-service-${var.env}"
-  cluster         = aws_ecs_cluster.this.id
-  task_definition = aws_ecs_task_definition.this.arn
-  desired_count   = var.desired_count
-  launch_type     = "FARGATE"
+  name                              = "${var.project_name}-service-${var.env}"
+  cluster                           = aws_ecs_cluster.this.id
+  task_definition                   = aws_ecs_task_definition.this.arn
+  desired_count                     = var.desired_count
+  launch_type                       = "FARGATE"
+  health_check_grace_period_seconds = 90
 
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
@@ -70,5 +71,42 @@ resource "aws_ecs_service" "this" {
     target_group_arn = aws_lb_target_group.this.arn
     container_name   = "app"
     container_port   = var.container_port
+  }
+
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
+}
+
+resource "aws_appautoscaling_target" "ecs_service" {
+  service_namespace  = "ecs"
+  scalable_dimension = "ecs:service:DesiredCount"
+
+  # IMPORTANT: format is service/<cluster-name>/<service-name>
+  resource_id = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.this.name}"
+
+  min_capacity = var.min_capacity
+  max_capacity = var.max_capacity
+}
+
+resource "aws_appautoscaling_policy" "ecs_req_per_target" {
+  name               = "${var.project_name}-as-policy-${var.env}"
+  policy_type        = "TargetTrackingScaling"
+  service_namespace  = aws_appautoscaling_target.ecs_service.service_namespace
+  scalable_dimension = aws_appautoscaling_target.ecs_service.scalable_dimension
+  resource_id        = aws_appautoscaling_target.ecs_service.resource_id
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ALBRequestCountPerTarget"
+
+      # resource_label must be "<lb_arn_suffix>/<tg_arn_suffix>"
+      resource_label = "${aws_lb.this.arn_suffix}/${aws_lb_target_group.this.arn_suffix}"
+    }
+
+    target_value       = var.target_requests_per_target
+    scale_in_cooldown  = 120
+    scale_out_cooldown = 30
+    disable_scale_in   = false
   }
 }

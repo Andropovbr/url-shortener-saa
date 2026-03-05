@@ -43,3 +43,7 @@ variable "dynamodb_table_name" {
   type        = string
   description = "DynamoDB table name for URL mappings."
 }
+
+variable "min_capacity" { type = number }
+variable "max_capacity" { type = number }
+variable "target_requests_per_target" { type = number }
