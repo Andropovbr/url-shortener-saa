@@ -6,3 +6,6 @@ repository        = "792025037142.dkr.ecr.us-east-1.amazonaws.com"
 image_tag = "v0.1.0"
 desired_count = 1
 dynamodb_table_name = "url-shortener-saa-url-mapping-prod"
+min_capacity = 2
+max_capacity = 6
+target_requests_per_target = 100
