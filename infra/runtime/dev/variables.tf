@@ -38,3 +38,8 @@ variable "desired_count" {
   type        = number
   description = "Number of tasks to run."
 }
+
+variable "dynamodb_table_name" {
+  type        = string
+  description = "DynamoDB table name for URL mappings."
+}
