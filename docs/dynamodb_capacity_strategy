@@ -1,0 +1,33 @@
+## DynamoDB Capacity Strategy
+
+The DynamoDB table for the URL mapping service uses the **On-Demand capacity mode (`PAY_PER_REQUEST`)**.
+
+### Rationale
+
+The URL shortener workload is expected to have **unpredictable traffic patterns**.
+Redirect requests may occur in bursts, and the overall traffic profile is not yet known.
+
+Using On-Demand capacity provides several advantages:
+
+- Automatic scaling with no capacity planning required
+- Ability to handle sudden traffic spikes
+- Simpler operational model
+- Reduced risk of throttling due to misconfigured capacity
+
+### Trade-offs
+
+On-Demand capacity may become more expensive than Provisioned capacity
+if the workload becomes **highly predictable and sustained at scale**.
+
+Provisioned capacity with auto scaling could be considered in the future
+if the following conditions occur:
+
+- traffic patterns become predictable
+- sustained high throughput is observed
+- cost optimization becomes a priority
+
+### Conclusion
+
+For the current architecture and expected workload characteristics,
+**On-Demand capacity provides the best balance between scalability,
+simplicity, and operational efficiency.**
