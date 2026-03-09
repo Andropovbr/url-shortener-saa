@@ -38,6 +38,10 @@ class ShortenResponse(BaseModel):
     expires_at: Optional[int] = None
 
 
+@app.get("/api/test-error")
+def test_error():
+    raise HTTPException(status_code=500, detail="Intentional test error")
+
 @app.get("/api/health/ready")
 def ready() -> dict:
     # Keep health check lightweight and dependency-free.

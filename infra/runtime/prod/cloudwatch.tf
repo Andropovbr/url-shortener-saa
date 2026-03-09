@@ -8,8 +8,8 @@ resource "aws_cloudwatch_log_group" "this" {
 
 }
 
-resource "aws_cloudwatch_metric_alarm" "5xx_errors" {
-  alarm_name          = "${var.project_name}-5xx-errors-${var.env}"
+resource "aws_cloudwatch_metric_alarm" "http_5xx_errors" {
+  alarm_name          = "${var.project_name}-http_5xx-errors-${var.env}"
   alarm_description = "Alarm when the number of 5xx errors exceeds the threshold"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1

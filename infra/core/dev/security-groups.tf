@@ -65,6 +65,15 @@ resource "aws_security_group_rule" "app_to_data" {
   source_security_group_id = aws_security_group.app_sg.id
 }
 
+resource "aws_security_group_rule" "app_to_redis" {
+  type                     = "ingress"
+  from_port                = var.redis_port
+  to_port                  = var.redis_port
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.data_sg.id
+  source_security_group_id = aws_security_group.app_sg.id
+}
+
 resource "aws_security_group_rule" "app_to_data_egress" {
   type                     = "egress"
   from_port                = var.db_port
@@ -131,3 +140,4 @@ resource "aws_security_group_rule" "app_egress_dynamodb_443" {
 
   description = "Allow HTTPS egress to DynamoDB via prefix list (no NAT)"
 }
+
