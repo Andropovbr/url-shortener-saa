@@ -39,18 +39,37 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "DDB_TABLE_NAME"
           value = var.dynamodb_table_name
-        }
+        },
+        {
+          name  = "REDIS_HOST"
+          value = aws_elasticache_replication_group.this.primary_endpoint_address
+        },
+        {
+          name  = "REDIS_PORT"
+          value = "6379"
+        },
+        {
+          name  = "CACHE_ENABLED"
+          value = "true"
+        },
+      ]
+
+      secrets = [
+        {
+          name      = "REDIS_AUTH_TOKEN"
+          valueFrom = aws_secretsmanager_secret.redis_auth_token.arn
+        },
       ]
     }
   ])
 }
 
 resource "aws_ecs_service" "this" {
-  name            = "${var.project_name}-service-${var.env}"
-  cluster         = aws_ecs_cluster.this.id
-  task_definition = aws_ecs_task_definition.this.arn
-  desired_count   = var.desired_count
-  launch_type     = "FARGATE"
+  name                              = "${var.project_name}-service-${var.env}"
+  cluster                           = aws_ecs_cluster.this.id
+  task_definition                   = aws_ecs_task_definition.this.arn
+  desired_count                     = var.desired_count
+  launch_type                       = "FARGATE"
   health_check_grace_period_seconds = 90
 
   deployment_minimum_healthy_percent = 100

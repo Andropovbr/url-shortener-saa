@@ -33,3 +33,8 @@ variable "db_port" {
   description = "Port used by the database"
   type        = number
 }
+
+variable "redis_port" {
+  description = "Port used by Redis"
+  type        = number
+}
