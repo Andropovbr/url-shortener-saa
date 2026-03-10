@@ -83,6 +83,15 @@ resource "aws_security_group_rule" "app_to_data_egress" {
   source_security_group_id = aws_security_group.data_sg.id
 }
 
+resource "aws_security_group_rule" "app_to_redis_egress" {
+  type                     = "egress"
+  from_port                = var.redis_port
+  to_port                  = var.redis_port
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.app_sg.id
+  source_security_group_id = aws_security_group.data_sg.id
+}
+
 resource "aws_security_group_rule" "app_to_vpce_egress" {
   type                     = "egress"
   from_port                = 443

@@ -36,6 +36,15 @@ locals {
       ]
       private_dns_enabled = true
     }
+    secretsmanager = {
+      service_name      = "com.amazonaws.${var.aws_region}.secretsmanager"
+      vpc_endpoint_type = "Interface"
+      subnet_ids        = data.terraform_remote_state.core.outputs.subnet_ids_private_app
+      security_group_ids = [
+        data.terraform_remote_state.core.outputs.security_group_vpce
+      ]
+      private_dns_enabled = true
+    }
   }
 }
 

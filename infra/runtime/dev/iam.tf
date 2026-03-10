@@ -19,9 +19,32 @@ resource "aws_iam_policy" "app_dynamodb_rw" {
   })
 }
 
+resource "aws_iam_policy" "app_secrets_manager_read" {
+  name = "${var.project_name}-secretsmanager-read-${var.env}"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "SecretsManagerRead"
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+        Resource = aws_secretsmanager_secret.redis_auth_token.arn
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "app_task_role_ddb" {
   role       = aws_iam_role.app_task_role.name
   policy_arn = aws_iam_policy.app_dynamodb_rw.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_execution_role_secrets" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.app_secrets_manager_read.arn
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {

@@ -39,7 +39,26 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "DDB_TABLE_NAME"
           value = var.dynamodb_table_name
-        }
+        },
+        {
+          name  = "REDIS_HOST"
+          value = aws_elasticache_replication_group.this.primary_endpoint_address
+        },
+        {
+          name  = "REDIS_PORT"
+          value = "6379"
+        },
+        {
+          name  = "CACHE_ENABLED"
+          value = "true"
+        },
+      ]
+
+      secrets = [
+        {
+          name      = "REDIS_AUTH_TOKEN"
+          valueFrom = aws_secretsmanager_secret.redis_auth_token.arn
+        },
       ]
     }
   ])
