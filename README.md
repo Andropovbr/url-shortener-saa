@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project simulates a production-style URL shortener architecture built on AWS using Terraform.
+This project simulates a production-grade URL shortener architecture built on AWS using Terraform.
 
 The primary goal is to practice AWS Solutions Architect Associate (SAA-C03) concepts through hands-on infrastructure design, focusing on:
 
@@ -11,6 +11,7 @@ The primary goal is to practice AWS Solutions Architect Associate (SAA-C03) conc
 - Security best practices
 - Infrastructure as Code
 - Cost awareness
+- Architectural trade-offs
 
 ---
 
@@ -23,8 +24,14 @@ Current progress:
 - Milestone 3 — Compute layer (ECS + ALB)
 - Milestone 4 — Data layer (DynamoDB)
 - Milestone 5 — Observability & Security
+- Milestone 6 — Cache layer (ElastiCache / Valkey)
+- Milestone 7 — Cost & Architecture Review
 
-Future milestones will focus on CI/CD and additional operational improvements.
+Upcoming milestones:
+
+- CI/CD pipeline for application deployment
+- CI/CD pipeline for Terraform
+- Terraform refactoring and modularization
 
 ---
 
@@ -46,7 +53,7 @@ AI may be used for architectural discussion and reasoning, but infrastructure co
 
 ## Architecture Overview
 
-High-level architecture:
+### Request Flow
 
 Client  
 ↓  
@@ -56,14 +63,23 @@ Application Load Balancer
 ↓  
 ECS Fargate Service (FastAPI application)  
 ↓  
-DynamoDB  
+Cache layer (ElastiCache - cache-aside pattern)  
+↓  
+DynamoDB (source of truth)
 
-Additional components:
+---
 
-- CloudWatch Logs for application logging
-- CloudWatch Alarms for operational monitoring
-- DynamoDB TTL for automatic expiration of URLs
-- VPC Endpoint for DynamoDB to avoid NAT Gateway costs
+### Core Components
+
+- ECS Fargate (FastAPI application)
+- Application Load Balancer (Multi-AZ)
+- AWS WAF protecting public entrypoint
+- DynamoDB (on-demand, TTL enabled)
+- ElastiCache (Valkey) as cache layer
+- CloudWatch Logs and Alarms
+- VPC Endpoints:
+  - Gateway Endpoint for DynamoDB
+  - Interface Endpoint for Secrets Manager
 
 ---
 
@@ -75,6 +91,7 @@ The system is designed to include:
 - Application Load Balancer
 - ECS Fargate service
 - DynamoDB data layer
+- ElastiCache cache layer
 - CloudWatch Logs and Alarms for observability
 - AWS WAF for edge protection
 - Security best practices
@@ -82,6 +99,61 @@ The system is designed to include:
 - Cost-conscious design (no NAT Gateway)
 
 Infrastructure is destroyed after each study session to avoid unnecessary AWS charges.
+
+---
+
+## Architecture Decisions
+
+### No NAT Gateway
+
+The architecture avoids the use of a NAT Gateway to reduce costs.
+
+Instead, VPC Endpoints are used to access AWS services privately.
+
+---
+
+### Cache Strategy
+
+A cache-aside pattern is implemented using ElastiCache (Valkey):
+
+1. Application checks Redis
+2. On cache miss, queries DynamoDB
+3. Stores result in Redis with TTL
+4. Returns response
+
+This improves read performance and reduces load on DynamoDB.
+
+---
+
+### ElastiCache High Availability Trade-off
+
+The current implementation uses a single-node cache to minimize cost.
+
+The network is designed with multiple data subnets, allowing future expansion to a highly available Redis replication group.
+
+---
+
+### Environment Isolation
+
+Separate VPCs are used for dev and prod environments to ensure isolation and allow independent evolution.
+
+---
+
+## Cost Considerations
+
+This project is designed with cost-awareness in mind:
+
+- No NAT Gateway (major cost reduction)
+- DynamoDB on-demand pricing
+- Minimal ECS task sizing (256 CPU / 512 MB)
+- Single-node ElastiCache instance
+- Infrastructure destroyed after each lab session
+
+### Main cost drivers
+
+- Application Load Balancer
+- VPC (data processing and endpoints)
+- ElastiCache
 
 ---
 
@@ -169,6 +241,7 @@ Examples:
 - ALB
 - ECS
 - DynamoDB
+- ElastiCache
 - WAF
 - monitoring resources
 
@@ -206,10 +279,14 @@ terraform apply
 
 This creates the S3 bucket and DynamoDB table used for Terraform state.
 
+---
+
 2. Initialize the core infrastructure backend:
 
 cd infra/core  
 terraform init -backend-config=backend.hcl  
+
+---
 
 3. Initialize the runtime infrastructure backend:
 
@@ -238,7 +315,11 @@ The system includes basic operational monitoring:
   - target response latency
   - unhealthy targets
 
-These alarms help detect application failures, performance degradation, and service health issues.
+These alarms help detect:
+
+- application failures
+- latency degradation
+- service health issues
 
 ---
 
@@ -249,6 +330,7 @@ Security measures implemented in the architecture include:
 - ECS tasks running in private subnets
 - Security groups following least-privilege principles
 - DynamoDB access through a VPC Endpoint
+- Secrets retrieved securely via Interface Endpoint (Secrets Manager)
 - AWS WAF protecting the public Application Load Balancer
 
 This design ensures that the application backend does not require public internet access.
