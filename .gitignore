@@ -9,3 +9,9 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Cache files for Python testing
+.pytest_cache/
+
+# Cache files for Python
+__pycache__/
