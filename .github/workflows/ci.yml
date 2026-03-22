@@ -25,12 +25,16 @@ jobs:
 
       - name: Install security tools
         run: |
-          pip install pip-audit
+          pip install pip-audit bandit
 
       - name: Run dependency vulnerability scan
         run: |
           pip-audit -r app/requirements.txt
-          
+
+      - name: Run static application security scan
+        run: |
+          bandit -r app
+
       - name: Run tests
         env:
           PYTHONPATH: .
