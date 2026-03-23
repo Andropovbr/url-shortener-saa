@@ -1,5 +1,5 @@
 bucket         = "url-shortener-saa-tfstate-shared-792025037142"
-key            = "shared/core/terraform.tfstate"
+key            = "shared/terraform.tfstate"
 region         = "us-east-1"
 encrypt        = true
 dynamodb_table = "url-shortener-tfstate-saa-lock"

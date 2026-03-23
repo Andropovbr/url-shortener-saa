@@ -1,2 +1,5 @@
-project_name = "url-shortener-saa"
-env          = "shared"
+project_name  = "url-shortener-saa"
+env           = "shared"
+github_owner  = "Andropovbr"
+github_repo   = "url-shortener-saa"
+github_branch = "main"
