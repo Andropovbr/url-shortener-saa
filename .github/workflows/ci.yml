@@ -46,10 +46,12 @@ jobs:
         run: python -m pytest
 
       - name: Configure AWS credentials
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::792025037142:role/url-shortener-saa-github-ecr-push-role
           aws-region: us-east-1
 
       - name: Login to Amazon ECR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: aws-actions/amazon-ecr-login@v2
