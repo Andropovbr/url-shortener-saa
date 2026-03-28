@@ -84,3 +84,31 @@ jobs:
           jq --arg IMAGE "$IMAGE_URI" \
             '.containerDefinitions[0].image = $IMAGE' \
             task-def.json > new-task-def.json
+
+      - name: Prepare task definition for registration
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          jq '
+            del(
+              .taskDefinition.taskDefinitionArn,
+              .taskDefinition.revision,
+              .taskDefinition.status,
+              .taskDefinition.requiresAttributes,
+              .taskDefinition.compatibilities,
+              .taskDefinition.registeredAt,
+              .taskDefinition.registeredBy
+            )
+            | .taskDefinition
+          ' new-task-def.json > deploy-task-def.json
+
+      - name: Register new task definition
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          aws ecs register-task-definition \
+            --cli-input-json file://deploy-task-def.json > task-def-output.json
+
+      - name: Extract new task definition ARN
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          TASK_DEF_ARN=$(jq -r '.taskDefinition.taskDefinitionArn' task-def-output.json)
+          echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
