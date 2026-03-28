@@ -29,11 +29,6 @@ variable "repository" {
   type        = string
 }
 
-variable "image_tag" {
-  description = "ECR image tag"
-  type        = string
-}
-
 variable "desired_count" {
   type        = number
   description = "Number of tasks to run."
@@ -44,6 +39,18 @@ variable "dynamodb_table_name" {
   description = "DynamoDB table name for URL mappings."
 }
 
-variable "min_capacity" { type = number }
-variable "max_capacity" { type = number }
-variable "target_requests_per_target" { type = number }
+variable "image_uri" {
+  type = string
+}
+
+variable "min_capacity" { 
+  type = number 
+}
+
+variable "max_capacity" { 
+  type = number 
+}
+
+variable "target_requests_per_target" { 
+  type = number 
+}
