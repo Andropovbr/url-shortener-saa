@@ -67,7 +67,7 @@ data "terraform_remote_state" "runtime_dev" {
   backend = "s3"
 
   config = {
-    bucket = "url-shortener-saa-tfstate-shared-792025037142"
+    bucket = var.tf_state_bucket
     key    = var.runtime_dev_state_key
     region = var.aws_region
   }
