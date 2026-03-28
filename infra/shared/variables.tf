@@ -30,3 +30,7 @@ variable "github_branch" {
 variable "runtime_dev_state_key" {
   type = string
 }
+
+variable "runtime_prod_state_key" {
+  type = string
+}
