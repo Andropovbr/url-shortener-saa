@@ -45,7 +45,10 @@ data "aws_iam_policy_document" "github_oidc_assume_role" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = [local.github_oidc_subject]
+      values = [
+        "repo:Andropovbr/url-shortener-saa:ref:refs/heads/main",
+        "repo:Andropovbr/url-shortener-saa:environment:production"
+      ]
     }
   }
 }
