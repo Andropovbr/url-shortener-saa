@@ -56,7 +56,9 @@ data "aws_iam_policy_document" "github_ecr_push" {
 
     resources = [
       data.terraform_remote_state.runtime_dev.outputs.ecs_task_execution_role_arn,
-      data.terraform_remote_state.runtime_dev.outputs.app_task_role_arn
+      data.terraform_remote_state.runtime_dev.outputs.app_task_role_arn,
+      data.terraform_remote_state.runtime_prod.outputs.ecs_task_execution_role_arn,
+      data.terraform_remote_state.runtime_prod.outputs.app_task_role_arn
     ]
   }
 }
@@ -67,6 +69,16 @@ data "terraform_remote_state" "runtime_dev" {
   config = {
     bucket = "url-shortener-saa-tfstate-shared-792025037142"
     key    = var.runtime_dev_state_key
+    region = var.aws_region
+  }
+}
+
+data "terraform_remote_state" "runtime_prod" {
+  backend = "s3"
+
+  config = {
+    bucket = var.tf_state_bucket
+    key    = var.runtime_prod_state_key
     region = var.aws_region
   }
 }
