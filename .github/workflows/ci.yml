@@ -70,3 +70,17 @@ jobs:
       - name: Push Docker image to Amazon ECR
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: docker push $IMAGE_URI
+
+      - name: Get current task definition
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition url-shortener-saa-task-dev \
+            --query taskDefinition > task-def.json
+
+      - name: Update image in task definition
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          jq --arg IMAGE "$IMAGE_URI" \
+            '.containerDefinitions[0].image = $IMAGE' \
+            task-def.json > new-task-def.json
