@@ -27,6 +27,11 @@ variable "github_branch" {
   default = "main"
 }
 
+
+variable "tf_state_bucket" {
+  description = "S3 bucket for Terraform state"
+  type        = string
+}
 variable "runtime_dev_state_key" {
   type = string
 }
