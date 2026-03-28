@@ -59,40 +59,6 @@ resource "aws_iam_role" "github_ecr_push" {
   }
 }
 
-data "aws_iam_policy_document" "github_ecr_push" {
-  statement {
-    sid    = "AllowGetAuthorizationToken"
-    effect = "Allow"
-
-    actions = [
-      "ecr:GetAuthorizationToken"
-    ]
-
-    resources = ["*"]
-  }
-
-  statement {
-    sid    = "AllowPushToSharedRepository"
-    effect = "Allow"
-
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchGetImage",
-      "ecr:CompleteLayerUpload",
-      "ecr:DescribeImages",
-      "ecr:DescribeRepositories",
-      "ecr:InitiateLayerUpload",
-      "ecr:ListImages",
-      "ecr:PutImage",
-      "ecr:UploadLayerPart"
-    ]
-
-    resources = [
-      aws_ecr_repository.this.arn
-    ]
-  }
-}
-
 resource "aws_iam_role_policy" "github_ecr_push" {
   name   = "${var.project_name}-github-ecr-push-policy"
   role   = aws_iam_role.github_ecr_push.id
