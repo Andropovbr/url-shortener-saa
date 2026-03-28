@@ -119,3 +119,14 @@ jobs:
             --cluster url-shortener-saa-cluster-dev \
             --service url-shortener-saa-service-dev \
             --task-definition $TASK_DEF_ARN
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::792025037142:role/url-shortener-saa-github-ecr-push-role
+          aws-region: us-east-1
+
+      - name: Set production image URI
+        run: |
+          IMAGE_URI=792025037142.dkr.ecr.us-east-1.amazonaws.com/url-shortener-saa-repository:${{ inputs.image_tag }}
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
