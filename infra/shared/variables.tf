@@ -26,3 +26,7 @@ variable "github_branch" {
   type    = string
   default = "main"
 }
+
+variable "runtime_dev_state_key" {
+  type = string
+}
