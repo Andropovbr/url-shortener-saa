@@ -130,3 +130,47 @@ jobs:
         run: |
           IMAGE_URI=792025037142.dkr.ecr.us-east-1.amazonaws.com/url-shortener-saa-repository:${{ inputs.image_tag }}
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+
+      - name: Get current production task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition url-shortener-saa-task-prod \
+            --query taskDefinition > task-def.json
+
+      - name: Update image in production task definition
+        run: |
+          jq --arg IMAGE "$IMAGE_URI" \
+            '.containerDefinitions[0].image = $IMAGE' \
+            task-def.json > new-task-def.json
+
+      - name: Prepare production task definition for registration
+        run: |
+          jq '
+            del(
+              .taskDefinitionArn,
+              .revision,
+              .status,
+              .requiresAttributes,
+              .compatibilities,
+              .registeredAt,
+              .registeredBy
+            )
+          ' new-task-def.json > deploy-task-def.json
+
+      - name: Register new production task definition
+        run: |
+          aws ecs register-task-definition \
+            --cli-input-json file://deploy-task-def.json > task-def-output.json
+
+      - name: Extract new production task definition ARN
+        run: |
+          TASK_DEF_ARN=$(jq -r '.taskDefinition.taskDefinitionArn' task-def-output.json)
+          echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
+
+      - name: Update production ECS service
+        run: |
+          aws ecs update-service \
+            --cluster url-shortener-saa-cluster-prod \
+            --service url-shortener-saa-service-prod \
+            --task-definition $TASK_DEF_ARN
+
