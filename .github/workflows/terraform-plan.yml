@@ -70,9 +70,7 @@ jobs:
 
       - name: Terraform init
         run: |
-          terraform init \
-            -input=false \
-            -backend-config=backend.hcl
+          terraform init -input=false
 
       - name: Terraform validate
         run: terraform validate
