@@ -111,8 +111,8 @@ data "aws_iam_policy_document" "github_oidc_assume_role" {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
       values = [
-        "repo:Andropovbr/url-shortener-saa:ref:refs/heads/main",
-        "repo:Andropovbr/url-shortener-saa:environment:production"
+        "repo:${var.github_owner}/${var.github_repo}:ref:refs/heads/*",
+        "repo:${var.github_owner}/${var.github_repo}:environment:production"
       ]
     }
   }
