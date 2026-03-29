@@ -122,8 +122,7 @@ data "aws_iam_policy_document" "github_oidc_assume_role_terraform" {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
       values = [
-        "repo:${var.github_owner}/${var.github_repo}:ref:refs/heads/*",
-        "repo:${var.github_owner}/${var.github_repo}:environment:production"
+        "repo:${var.github_owner}/${var.github_repo}:*"
       ]
     }
   }
