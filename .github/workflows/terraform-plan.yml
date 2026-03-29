@@ -27,25 +27,25 @@ jobs:
         include:
           - environment: dev
             layer: core
-            working_directory: infra
+            working_directory: infra/core
             backend_key: dev/core/terraform.tfstate
             tfvars_file: dev/terraform.tfvars
 
           - environment: dev
             layer: runtime
-            working_directory: infra
+            working_directory: infra/runtime
             backend_key: dev/runtime/terraform.tfstate
             tfvars_file: dev/terraform.tfvars
 
           - environment: prod
             layer: core
-            working_directory: infra
+            working_directory: infra/core
             backend_key: prod/core/terraform.tfstate
             tfvars_file: prod/terraform.tfvars
 
           - environment: prod
             layer: runtime
-            working_directory: infra
+            working_directory: infra/runtime
             backend_key: prod/runtime/terraform.tfstate
             tfvars_file: prod/terraform.tfvars
 
@@ -85,6 +85,16 @@ jobs:
       - name: Terraform validate
         run: terraform validate
 
+      - name: Show working directory
+        run: |
+          pwd
+          ls -la
+          echo "tfvars file: ${{ matrix.tfvars_file }}"
+
+      - name: Check tfvars file
+        run: |
+          test -f "${{ matrix.tfvars_file }}" && echo "tfvars found" || (echo "tfvars NOT found" && exit 1)
+      
       - name: Terraform plan
         run: |
           terraform plan \
