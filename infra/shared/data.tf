@@ -111,7 +111,7 @@ data "aws_iam_policy_document" "github_oidc_assume_role" {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
       values = [
-        "repo:${var.github_owner}/${var.github_repo}:ref:refs/heads/*",
+        "repo:${var.github_owner}/${var.github_repo}:ref:refs/heads/main",
         "repo:${var.github_owner}/${var.github_repo}:environment:production"
       ]
     }
@@ -141,9 +141,9 @@ data "aws_iam_policy_document" "github_oidc_assume_role_terraform" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values = [
-        "repo:${var.github_repo}:ref:refs/heads/main",
-        "repo:${var.github_repo}:environment:production"
+        values = [
+        "repo:${var.github_owner}/${var.github_repo}:ref:refs/heads/main",
+        "repo:${var.github_owner}/${var.github_repo}:environment:production"
       ]
     }
   }
