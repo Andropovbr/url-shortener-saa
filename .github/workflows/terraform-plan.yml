@@ -1,0 +1,88 @@
+name: Terraform Plan
+
+on:
+  pull_request:
+    paths:
+      - 'infra/**'
+      - '.github/workflows/terraform-plan.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/**'
+      - '.github/workflows/terraform-plan.yml'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  plan:
+    name: Plan (${{ matrix.environment }}/${{ matrix.layer }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - environment: dev
+            layer: core
+            working_directory: infra/core
+            backend_key: dev/core/terraform.tfstate
+
+          - environment: dev
+            layer: runtime
+            working_directory: infra/runtime
+            backend_key: dev/runtime/terraform.tfstate
+
+          - environment: prod
+            layer: core
+            working_directory: infra/core
+            backend_key: prod/core/terraform.tfstate
+
+          - environment: prod
+            layer: runtime
+            working_directory: infra/runtime
+            backend_key: prod/runtime/terraform.tfstate
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.working_directory }}
+
+    env:
+      AWS_REGION: us-east-1
+      TF_IN_AUTOMATION: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
+          role-session-name: github-actions-terraform-plan
+
+      - name: Terraform version
+        run: terraform version
+
+      - name: Terraform init
+        run: |
+          terraform init \
+            -input=false \
+            -backend-config="key=${{ matrix.backend_key }}"
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: |
+          terraform plan \
+            -input=false \
+            -no-color \
+            -var-file=terraform.tfvars
