@@ -20,6 +20,7 @@ jobs:
   plan:
     name: Plan (${{ matrix.environment }}/${{ matrix.layer }})
     runs-on: ubuntu-latest
+
     strategy:
       fail-fast: false
       matrix:
@@ -28,21 +29,25 @@ jobs:
             layer: core
             working_directory: infra/core
             backend_key: dev/core/terraform.tfstate
+            tfvars_file: dev/terraform.tfvars
 
           - environment: dev
             layer: runtime
             working_directory: infra/runtime
             backend_key: dev/runtime/terraform.tfstate
+            tfvars_file: dev/terraform.tfvars
 
           - environment: prod
             layer: core
             working_directory: infra/core
             backend_key: prod/core/terraform.tfstate
+            tfvars_file: prod/terraform.tfvars
 
           - environment: prod
             layer: runtime
             working_directory: infra/runtime
             backend_key: prod/runtime/terraform.tfstate
+            tfvars_file: prod/terraform.tfvars
 
     defaults:
       run:
@@ -85,4 +90,4 @@ jobs:
           terraform plan \
             -input=false \
             -no-color \
-            -var-file=terraform.tfvars
+            -var-file="${{ matrix.tfvars_file }}"
