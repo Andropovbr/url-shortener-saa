@@ -94,10 +94,14 @@ jobs:
       - name: Check tfvars file
         run: |
           test -f "${{ matrix.tfvars_file }}" && echo "tfvars found" || (echo "tfvars NOT found" && exit 1)
-      
+
+      - name: Inspect tfvars directory
+        run: |
+            ls -la "${{ matrix.environment }}"
+        
       - name: Terraform plan
         run: |
-          terraform plan \
-            -input=false \
-            -no-color \
-            -var-file="${{ matrix.tfvars_file }}"
+            terraform plan \
+                -input=false \
+                -no-color \
+                -var-file="${{ matrix.tfvars_file }}"
