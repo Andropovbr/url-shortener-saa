@@ -67,26 +67,6 @@ data "aws_iam_policy_document" "github_ecr_push" {
   }
 }
 
-data "terraform_remote_state" "runtime_dev" {
-  backend = "s3"
-
-  config = {
-    bucket = var.tf_state_bucket
-    key    = var.runtime_dev_state_key
-    region = var.aws_region
-  }
-}
-
-data "terraform_remote_state" "runtime_prod" {
-  backend = "s3"
-
-  config = {
-    bucket = var.tf_state_bucket
-    key    = var.runtime_prod_state_key
-    region = var.aws_region
-  }
-}
-
 data "aws_iam_policy_document" "github_oidc_assume_role" {
   statement {
     sid    = "GitHubActionsAssumeRoleWithOIDC"
@@ -139,10 +119,10 @@ data "aws_iam_policy_document" "github_oidc_assume_role_terraform" {
     }
 
     condition {
-      test     = "StringEquals"
+      test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-        values = [
-        "repo:${var.github_owner}/${var.github_repo}:ref:refs/heads/main",
+      values = [
+        "repo:${var.github_owner}/${var.github_repo}:ref:refs/heads/*",
         "repo:${var.github_owner}/${var.github_repo}:environment:production"
       ]
     }
