@@ -138,7 +138,7 @@ data "aws_iam_policy_document" "github_terraform_backend" {
     ]
 
     resources = [
-      "arn:aws:s3:::${var.project_name}-terraform-state"
+      "arn:aws:s3:::url-shortener-saa-tfstate-shared-792025037142"
     ]
   }
 
@@ -153,7 +153,7 @@ data "aws_iam_policy_document" "github_terraform_backend" {
     ]
 
     resources = [
-      "arn:aws:s3:::${var.project_name}-terraform-state/*"
+      "arn:aws:s3:::url-shortener-saa-tfstate-shared-792025037142/*"
     ]
   }
 
@@ -170,7 +170,7 @@ data "aws_iam_policy_document" "github_terraform_backend" {
     ]
 
     resources = [
-      "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${var.project_name}-terraform-locks"
+      "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/url-shortener-tfstate-saa-lock"
     ]
   }
 }
