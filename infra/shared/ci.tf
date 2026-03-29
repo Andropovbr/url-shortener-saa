@@ -1,7 +1,3 @@
-data "aws_caller_identity" "current" {}
-
-data "aws_partition" "current" {}
-
 locals {
   github_repo_full_name = "${var.github_owner}/${var.github_repo}"
 
@@ -22,37 +18,6 @@ resource "aws_iam_openid_connect_provider" "github" {
   }
 }
 
-data "aws_iam_policy_document" "github_oidc_assume_role" {
-  statement {
-    sid    = "GitHubActionsAssumeRoleWithOIDC"
-    effect = "Allow"
-
-    actions = [
-      "sts:AssumeRoleWithWebIdentity"
-    ]
-
-    principals {
-      type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.github.arn]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "token.actions.githubusercontent.com:aud"
-      values   = ["sts.amazonaws.com"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "token.actions.githubusercontent.com:sub"
-      values = [
-        "repo:Andropovbr/url-shortener-saa:ref:refs/heads/main",
-        "repo:Andropovbr/url-shortener-saa:environment:production"
-      ]
-    }
-  }
-}
-
 resource "aws_iam_role" "github_ecr_push" {
   name               = local.ecr_push_role_name
   assume_role_policy = data.aws_iam_policy_document.github_oidc_assume_role.json
@@ -68,10 +33,33 @@ resource "aws_iam_role_policy" "github_ecr_push" {
   policy = data.aws_iam_policy_document.github_ecr_push.json
 }
 
-output "github_actions_ecr_push_role_arn" {
-  value = aws_iam_role.github_ecr_push.arn
+resource "aws_iam_role" "github_terraform" {
+  name               = "${var.project_name}-github-terraform-role"
+  assume_role_policy = data.aws_iam_policy_document.github_oidc_assume_role_terraform.json
+
+  tags = {
+    Project   = var.project_name
+    Owner     = "Andre Santos"
+    ManagedBy = "Terraform"
+  }
 }
 
-output "github_actions_oidc_provider_arn" {
-  value = aws_iam_openid_connect_provider.github.arn
+resource "aws_iam_policy" "github_terraform_backend" {
+  name   = "${var.project_name}-github-terraform-backend-policy"
+  policy = data.aws_iam_policy_document.github_terraform_backend.json
+}
+
+resource "aws_iam_role_policy_attachment" "github_terraform_backend" {
+  role       = aws_iam_role.github_terraform.name
+  policy_arn = aws_iam_policy.github_terraform_backend.arn
+}
+
+resource "aws_iam_policy" "github_terraform_workflows" {
+  name   = "${var.project_name}-github-terraform-workflows-policy"
+  policy = data.aws_iam_policy_document.github_terraform_workflows.json
+}
+
+resource "aws_iam_role_policy_attachment" "github_terraform_workflows" {
+  role       = aws_iam_role.github_terraform.name
+  policy_arn = aws_iam_policy.github_terraform_workflows.arn
 }
