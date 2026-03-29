@@ -8,4 +8,4 @@ desired_count              = 1
 dynamodb_table_name        = "url-shortener-saa-url-mapping-dev"
 min_capacity               = 1
 max_capacity               = 2
-    target_requests_per_target = 50
+target_requests_per_target = 50
