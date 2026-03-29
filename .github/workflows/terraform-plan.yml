@@ -27,25 +27,25 @@ jobs:
         include:
           - environment: dev
             layer: core
-            working_directory: infra/core
+            working_directory: infra
             backend_key: dev/core/terraform.tfstate
             tfvars_file: dev/terraform.tfvars
 
           - environment: dev
             layer: runtime
-            working_directory: infra/runtime
+            working_directory: infra
             backend_key: dev/runtime/terraform.tfstate
             tfvars_file: dev/terraform.tfvars
 
           - environment: prod
             layer: core
-            working_directory: infra/core
+            working_directory: infra
             backend_key: prod/core/terraform.tfstate
             tfvars_file: prod/terraform.tfvars
 
           - environment: prod
             layer: runtime
-            working_directory: infra/runtime
+            working_directory: infra
             backend_key: prod/runtime/terraform.tfstate
             tfvars_file: prod/terraform.tfvars
 
