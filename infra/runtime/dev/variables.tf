@@ -43,14 +43,14 @@ variable "image_uri" {
   type = string
 }
 
-variable "min_capacity" { 
-  type = number 
+variable "min_capacity" {
+  type = number
 }
 
-variable "max_capacity" { 
-  type = number 
+variable "max_capacity" {
+  type = number
 }
 
-variable "target_requests_per_target" { 
-  type = number 
+variable "target_requests_per_target" {
+  type = number
 }

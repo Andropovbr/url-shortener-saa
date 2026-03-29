@@ -21,7 +21,7 @@ provider "aws" {
 }
 
 locals {
-  tfstate_bucket = "url-shortener-saa-tfstate-shared-${data.aws_caller_identity.current.account_id}"
+  tfstate_bucket     = "url-shortener-saa-tfstate-shared-${data.aws_caller_identity.current.account_id}"
   tfstate_lock_table = "url-shortener-tfstate-saa-lock"
 }
 
